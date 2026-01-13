@@ -12,6 +12,15 @@ dist
 dist-ssr
 *.local
 
+# Environment variables (contains API keys - never commit!)
+.env
+.env.local
+.env.production
+.env.development
+
+# Next.js
+.next
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

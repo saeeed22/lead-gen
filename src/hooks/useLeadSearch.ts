@@ -1,38 +1,18 @@
+"use client";
+
 import { useState, useCallback } from 'react';
-import type { SearchJob, Lead, SearchFormData, JobStatus } from '@/types/leads';
-
-// Mock data generator for demo purposes
-const generateMockLeads = (city: string, niche: string, jobId: string): Lead[] => {
-  const businesses = [
-    { prefix: 'Premium', suffix: 'Solutions' },
-    { prefix: 'Elite', suffix: 'Services' },
-    { prefix: 'Pro', suffix: 'Group' },
-    { prefix: 'Metro', suffix: 'Co' },
-    { prefix: 'City', suffix: 'Partners' },
-    { prefix: 'Urban', suffix: 'Hub' },
-    { prefix: 'Local', suffix: 'Experts' },
-    { prefix: 'Prime', suffix: 'Network' },
-  ];
-
-  return businesses.map((biz, index) => ({
-    id: `lead-${jobId}-${index}`,
-    jobId,
-    name: `${biz.prefix} ${niche} ${biz.suffix}`,
-    website: `www.${biz.prefix.toLowerCase()}${niche.toLowerCase().replace(/\s/g, '')}.com`,
-    email: `info@${biz.prefix.toLowerCase()}${niche.toLowerCase().replace(/\s/g, '')}.com`,
-    phone: `(${Math.floor(Math.random() * 900) + 100}) ${Math.floor(Math.random() * 900) + 100}-${Math.floor(Math.random() * 9000) + 1000}`,
-    address: `${Math.floor(Math.random() * 9000) + 1000} Main Street, ${city}`,
-  }));
-};
+import type { SearchJob, Lead, SearchFormData } from '@/types/leads';
 
 export function useLeadSearch() {
   const [currentJob, setCurrentJob] = useState<SearchJob | null>(null);
   const [leads, setLeads] = useState<Lead[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const startSearch = useCallback(async (data: SearchFormData) => {
     setIsSubmitting(true);
     setLeads([]);
+    setError(null);
 
     // Create a new job
     const jobId = `job-${Date.now()}`;
@@ -45,31 +25,54 @@ export function useLeadSearch() {
     };
     setCurrentJob(newJob);
 
-    // Simulate job status transitions
-    await new Promise((resolve) => setTimeout(resolve, 500));
-    
+    // Update to running status
     setCurrentJob((prev) => prev ? { ...prev, status: 'running' } : null);
-    
-    // Simulate processing time
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-    
-    // Generate mock leads
-    const mockLeads = generateMockLeads(data.city, data.niche, jobId);
-    setLeads(mockLeads);
-    
-    setCurrentJob((prev) => prev ? { ...prev, status: 'completed' } : null);
-    setIsSubmitting(false);
+
+    try {
+      // Call our API route which proxies to Foursquare
+      const params = new URLSearchParams({
+        query: data.niche,
+        near: data.city,
+        limit: '20',
+      });
+
+      const response = await fetch(`/api/search?${params}`);
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to search for leads');
+      }
+
+      const result = await response.json();
+
+      // Map the results to our Lead format with jobId
+      const mappedLeads: Lead[] = result.results.map((lead: Partial<Lead>) => ({
+        ...lead,
+        jobId,
+      } as Lead));
+
+      setLeads(mappedLeads);
+      setCurrentJob((prev) => prev ? { ...prev, status: 'completed' } : null);
+    } catch (err) {
+      console.error('Search error:', err);
+      setError(err instanceof Error ? err.message : 'An error occurred');
+      setCurrentJob((prev) => prev ? { ...prev, status: 'completed' } : null);
+    } finally {
+      setIsSubmitting(false);
+    }
   }, []);
 
   const resetSearch = useCallback(() => {
     setCurrentJob(null);
     setLeads([]);
+    setError(null);
   }, []);
 
   return {
     currentJob,
     leads,
     isSubmitting,
+    error,
     startSearch,
     resetSearch,
   };

@@ -6,10 +6,10 @@ import { LeadsTable } from "@/components/LeadsTable";
 import { JobStatusBadge } from "@/components/JobStatusBadge";
 import { useLeadSearch } from "@/hooks/useLeadSearch";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Users, MapPin, Briefcase } from "lucide-react";
+import { ArrowLeft, Users, MapPin, Briefcase, AlertCircle } from "lucide-react";
 
 export default function Home() {
-    const { currentJob, leads, isSubmitting, startSearch, resetSearch } = useLeadSearch();
+    const { currentJob, leads, isSubmitting, error, startSearch, resetSearch } = useLeadSearch();
 
     return (
         <div className="min-h-screen bg-background">
@@ -77,6 +77,13 @@ export default function Home() {
                             </div>
                             <JobStatusBadge status={currentJob.status} />
                         </div>
+
+                        {error && (
+                            <div className="mb-6 p-4 rounded-lg border border-destructive/50 bg-destructive/10 flex items-center gap-3">
+                                <AlertCircle className="h-5 w-5 text-destructive" />
+                                <p className="text-destructive">{error}</p>
+                            </div>
+                        )}
 
                         <LeadsTable
                             leads={leads}
