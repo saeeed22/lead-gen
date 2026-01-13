@@ -1,3 +1,5 @@
+"use client";
+
 import { useState } from 'react';
 import { ArrowUpDown, ExternalLink, Mail, Phone, MapPin, Building2 } from 'lucide-react';
 import {
@@ -101,8 +103,8 @@ export function LeadsTable({ leads, isLoading }: LeadsTableProps) {
         </TableHeader>
         <TableBody>
           {sortedLeads.map((lead, index) => (
-            <TableRow 
-              key={lead.id} 
+            <TableRow
+              key={lead.id}
               className="hover:bg-muted/50 transition-colors border-border"
               style={{ animationDelay: `${index * 50}ms` }}
             >
