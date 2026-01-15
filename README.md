@@ -1,4 +1,4 @@
-# Local Scout - Lead Finder
+# Lead Gen
 
 A modern web application to discover local business leads using the Yelp Fusion API. Enter a city and business niche to find qualified leads instantly.
 
@@ -25,8 +25,8 @@ A modern web application to discover local business leads using the Yelp Fusion 
 
 1. Clone the repository
    ```bash
-   git clone https://github.com/yourusername/local-scout.git
-   cd local-scout
+   git clone https://github.com/saeeed22/lead-gen.git
+   cd lead-gen
    ```
 
 2. Install dependencies
