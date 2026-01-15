@@ -1,78 +1,86 @@
 "use client";
 
 import { useState, useCallback } from 'react';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import type { SearchJob, Lead, SearchFormData } from '@/types/leads';
+
+interface SearchResult {
+  results: Partial<Lead>[];
+}
+
+async function fetchLeads(data: SearchFormData): Promise<SearchResult> {
+  const params = new URLSearchParams({
+    term: data.niche,
+    location: data.city,
+    limit: '20',
+  });
+
+  const response = await fetch(`/api/yelp?${params}`);
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.error || 'Failed to search for leads');
+  }
+
+  return response.json();
+}
 
 export function useLeadSearch() {
   const [currentJob, setCurrentJob] = useState<SearchJob | null>(null);
   const [leads, setLeads] = useState<Lead[]>([]);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const queryClient = useQueryClient();
 
-  const startSearch = useCallback(async (data: SearchFormData) => {
-    setIsSubmitting(true);
-    setLeads([]);
-    setError(null);
-
-    // Create a new job
-    const jobId = `job-${Date.now()}`;
-    const newJob: SearchJob = {
-      id: jobId,
-      city: data.city,
-      niche: data.niche,
-      status: 'pending',
-      createdAt: new Date(),
-    };
-    setCurrentJob(newJob);
-
-    // Update to running status
-    setCurrentJob((prev) => prev ? { ...prev, status: 'running' } : null);
-
-    try {
-      // Call our API route which proxies to Foursquare
-      const params = new URLSearchParams({
-        query: data.niche,
-        near: data.city,
-        limit: '20',
-      });
-
-      const response = await fetch(`/api/search?${params}`);
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to search for leads');
-      }
-
-      const result = await response.json();
-
+  const mutation = useMutation({
+    mutationFn: fetchLeads,
+    onMutate: (data) => {
+      // Create a new job when mutation starts
+      const jobId = `job-${Date.now()}`;
+      const newJob: SearchJob = {
+        id: jobId,
+        city: data.city,
+        niche: data.niche,
+        status: 'running',
+        createdAt: new Date(),
+      };
+      setCurrentJob(newJob);
+      setLeads([]);
+      return { jobId };
+    },
+    onSuccess: (result, _data, context) => {
       // Map the results to our Lead format with jobId
-      const mappedLeads: Lead[] = result.results.map((lead: Partial<Lead>) => ({
+      const mappedLeads: Lead[] = result.results.map((lead) => ({
         ...lead,
-        jobId,
+        jobId: context?.jobId || '',
       } as Lead));
 
       setLeads(mappedLeads);
       setCurrentJob((prev) => prev ? { ...prev, status: 'completed' } : null);
-    } catch (err) {
-      console.error('Search error:', err);
-      setError(err instanceof Error ? err.message : 'An error occurred');
+
+      // Cache the results
+      if (context?.jobId) {
+        queryClient.setQueryData(['leads', context.jobId], mappedLeads);
+      }
+    },
+    onError: () => {
       setCurrentJob((prev) => prev ? { ...prev, status: 'completed' } : null);
-    } finally {
-      setIsSubmitting(false);
-    }
-  }, []);
+    },
+  });
+
+  const startSearch = useCallback(async (data: SearchFormData) => {
+    mutation.mutate(data);
+  }, [mutation]);
 
   const resetSearch = useCallback(() => {
     setCurrentJob(null);
     setLeads([]);
-    setError(null);
-  }, []);
+    mutation.reset();
+  }, [mutation]);
 
   return {
     currentJob,
     leads,
-    isSubmitting,
-    error,
+    isSubmitting: mutation.isPending,
+    error: mutation.error?.message || null,
     startSearch,
     resetSearch,
   };

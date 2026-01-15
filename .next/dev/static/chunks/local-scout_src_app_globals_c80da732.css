@@ -61,6 +61,7 @@
     --color-red-300: #ffa3a3;
     --color-red-400: #ff6568;
     --color-red-600: #e40014;
+    --color-yellow-400: #fac800;
     --color-black: #000;
     --spacing: .25rem;
     --container-sm: 24rem;
@@ -146,6 +147,7 @@
       --color-red-300: lab(76.5514% 36.4219 15.5335);
       --color-red-400: lab(63.7053% 60.7449 31.3109);
       --color-red-600: lab(48.4493% 77.4328 61.5452);
+      --color-yellow-400: lab(83.2664% 8.65132 106.895);
       --shadow-glow: 0 0 40px -10px lab(55.41% 17.3385 -82.6078 / .3);
     }
   }
@@ -690,6 +692,10 @@
     margin-bottom: calc(var(--spacing) * 4);
   }
 
+  .mb-6 {
+    margin-bottom: calc(var(--spacing) * 6);
+  }
+
   .mb-8 {
     margin-bottom: calc(var(--spacing) * 8);
   }
@@ -963,10 +969,6 @@
     width: 200px;
   }
 
-  .w-\[250px\] {
-    width: 250px;
-  }
-
   .w-auto {
     width: auto;
   }
@@ -991,12 +993,12 @@
     max-width: --skeleton-width;
   }
 
-  .max-w-\[150px\] {
-    max-width: 150px;
+  .max-w-\[120px\] {
+    max-width: 120px;
   }
 
-  .max-w-\[200px\] {
-    max-width: 200px;
+  .max-w-\[180px\] {
+    max-width: 180px;
   }
 
   .max-w-lg {
@@ -1187,6 +1189,10 @@
 
   .gap-2 {
     gap: calc(var(--spacing) * 2);
+  }
+
+  .gap-3 {
+    gap: calc(var(--spacing) * 3);
   }
 
   .gap-4 {
@@ -1477,12 +1483,32 @@
     background-color: var(--color-destructive);
   }
 
+  .bg-destructive\/10 {
+    background-color: color-mix(in srgb, hsl(var(--destructive)) 10%, transparent);
+  }
+
+  @supports (color: color-mix(in lab, red, red)) {
+    .bg-destructive\/10 {
+      background-color: color-mix(in oklab, var(--color-destructive) 10%, transparent);
+    }
+  }
+
   .bg-foreground {
     background-color: var(--color-foreground);
   }
 
   .bg-muted {
     background-color: var(--color-muted);
+  }
+
+  .bg-muted\/30 {
+    background-color: color-mix(in srgb, hsl(var(--muted)) 30%, transparent);
+  }
+
+  @supports (color: color-mix(in lab, red, red)) {
+    .bg-muted\/30 {
+      background-color: color-mix(in oklab, var(--color-muted) 30%, transparent);
+    }
   }
 
   .bg-muted\/50 {
@@ -1561,6 +1587,10 @@
 
   .fill-current {
     fill: currentColor;
+  }
+
+  .fill-yellow-400 {
+    fill: var(--color-yellow-400);
   }
 
   .p-0 {
@@ -1892,6 +1922,10 @@
 
   .text-status-running {
     color: var(--color-status-running);
+  }
+
+  .text-yellow-400 {
+    color: var(--color-yellow-400);
   }
 
   .tabular-nums {

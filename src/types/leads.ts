@@ -16,6 +16,10 @@ export interface Lead {
   email: string;
   phone: string;
   address: string;
+  rating?: number;
+  reviewCount?: number;
+  category?: string;
+  imageUrl?: string;
 }
 
 export interface SearchFormData {

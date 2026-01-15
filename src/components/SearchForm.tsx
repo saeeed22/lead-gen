@@ -71,7 +71,7 @@ export function SearchForm({ onSubmit, isLoading }: SearchFormProps) {
             {isLoading ? (
               <>
                 <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                Starting Search...
+                Searching...
               </>
             ) : (
               <>

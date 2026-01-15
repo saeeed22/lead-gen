@@ -73,6 +73,7 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$local$2d$scout$2f$node_modul
 ;
 const TOAST_LIMIT = 1;
 const TOAST_REMOVE_DELAY = 1000000;
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const actionTypes = {
     ADD_TOAST: "ADD_TOAST",
     UPDATE_TOAST: "UPDATE_TOAST",

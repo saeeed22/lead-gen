@@ -88,6 +88,8 @@ export default function Home() {
                         <LeadsTable
                             leads={leads}
                             isLoading={currentJob.status !== 'completed'}
+                            city={currentJob.city}
+                            niche={currentJob.niche}
                         />
                     </div>
                 )}

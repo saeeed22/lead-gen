@@ -41,10 +41,10 @@
       "namedRegex": "^/_not\\-found(?:/)?$"
     },
     {
-      "page": "/api/search",
-      "regex": "^/api/search(?:/)?$",
+      "page": "/api/yelp",
+      "regex": "^/api/yelp(?:/)?$",
       "routeKeys": {},
-      "namedRegex": "^/api/search(?:/)?$"
+      "namedRegex": "^/api/yelp(?:/)?$"
     }
   ],
   "dataRoutes": [],
