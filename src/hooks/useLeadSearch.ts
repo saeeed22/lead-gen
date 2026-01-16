@@ -15,7 +15,7 @@ async function fetchLeads(data: SearchFormData): Promise<SearchResult> {
     limit: '20',
   });
 
-  const response = await fetch(`/api/yelp?${params}`);
+  const response = await fetch(`/api/leads?${params}`);
 
   if (!response.ok) {
     const errorData = await response.json();

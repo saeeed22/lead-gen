@@ -1,7 +1,25 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-    // Turbopack is the default bundler in Next.js 16
-    // React Compiler is enabled by default
+    images: {
+        remotePatterns: [
+            {
+                protocol: 'https',
+                hostname: 'lh3.googleusercontent.com',
+            },
+            {
+                protocol: 'https',
+                hostname: 'lh5.googleusercontent.com',
+            },
+            {
+                protocol: 'https',
+                hostname: 'encrypted-tbn0.gstatic.com',
+            },
+            {
+                protocol: 'https',
+                hostname: 'serpapi.com',
+            }
+        ],
+    },
 };
 
 export default nextConfig;
