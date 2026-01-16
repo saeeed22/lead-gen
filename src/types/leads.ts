@@ -19,7 +19,9 @@ export interface Lead {
   rating?: number;
   reviewCount?: number;
   category?: string;
+  allCategories?: string[];
   imageUrl?: string;
+  relevanceScore?: number;
 }
 
 export interface SearchFormData {
